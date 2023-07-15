@@ -1,7 +1,9 @@
 import httpStatus from "http-status";
 import ApiError from "../../../errors/ApiErrors";
-import { IBook } from "./books.interface";
+import { BooksFilter, IBook } from "./books.interface";
 import { Books } from "./books.model";
+import { IGenericResponse } from "../../../interfaces/common";
+import { BooksSearchAbleFields } from "./books.constant";
 
 //Create Book Service
 const createBookService = async (payload: IBook): Promise<IBook> => {
@@ -20,8 +22,34 @@ const createBookService = async (payload: IBook): Promise<IBook> => {
   return result;
 };
 
-const getAllBookService = async (): Promise<IBook[]> => {
-  const result = await Books.find();
+const getAllBookService = async (filters: BooksFilter): Promise<IBook[]> => {
+  const { searchTerm, ...filtersData } = filters;
+
+  const andConditions = [];
+
+  if (searchTerm) {
+    andConditions.push({
+      $or: BooksSearchAbleFields.map((field) => ({
+        [field]: {
+          $regex: searchTerm,
+          $options: "i",
+        },
+      })),
+    });
+  }
+
+  if (Object.keys(filtersData).length) {
+    andConditions.push({
+      $and: Object.entries(filtersData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  const whenConditions =
+    andConditions.length > 0 ? { $and: andConditions } : {};
+
+  const result = await Books.find(whenConditions).sort({ createdAt: -1 });
   return result;
 };
 

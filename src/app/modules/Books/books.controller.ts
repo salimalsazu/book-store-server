@@ -4,6 +4,8 @@ import sendResponse from "../../../shared/sendResponse";
 import { Request, Response } from "express";
 import { BooksService } from "./books.service";
 import { IBook } from "./books.interface";
+import pick from "../../../shared/pick";
+import { BooksFilterAbleFields } from "./books.constant";
 
 //Create Cow Controller
 const createBookController = catchAsync(async (req: Request, res: Response) => {
@@ -21,7 +23,9 @@ const createBookController = catchAsync(async (req: Request, res: Response) => {
 
 //Get All Cows Controller
 const getAllBookController = catchAsync(async (req: Request, res: Response) => {
-  const result = await BooksService.getAllBookService();
+  const filters = pick(req.query, BooksFilterAbleFields);
+
+  const result = await BooksService.getAllBookService(filters);
 
   sendResponse<IBook[]>(res, {
     statusCode: httpStatus.OK,
