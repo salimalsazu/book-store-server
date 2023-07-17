@@ -135,6 +135,11 @@ const createReviewService = async (
   return review;
 };
 
+const getMyReviewsService = async (id: string): Promise<IReview[] | null> => {
+  const result = await Books.findById(id);
+  return result?.reviews || [];
+};
+
 export const BooksService = {
   createBookService,
   getAllBookService,
@@ -143,4 +148,5 @@ export const BooksService = {
   updateBookService,
   getMyBookService,
   createReviewService,
+  getMyReviewsService,
 };

@@ -17,6 +17,6 @@ router.patch("/:id", BooksController.updateBookController);
 
 router.post("/reviews/:id", BooksController.createMyReview);
 
-router.post("/reviews/:id", BooksController.getMyReview);
+router.get("/reviews/:id", BooksController.getMyReviewController);
 
 export const BookRoutes = router;

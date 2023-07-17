@@ -99,20 +99,18 @@ const createMyReview = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getMyReview = catchAsync(async (req: Request, res: Response) => {
-    const filters = pick(req.query, BooksFilterAbleFields);
-  
-    const result = await BooksService.getAllBookService(filters);
-  
-    sendResponse<IBook[]>(res, {
+const getMyReviewController = catchAsync(
+  async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const result = await BooksService.getMyReviewsService(id);
+    sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: "All Books get Successfully",
+      message: "Single Book get Successfully",
       data: result,
     });
-  });
-
-
+  }
+);
 
 export const BooksController = {
   createBookController,
@@ -122,5 +120,5 @@ export const BooksController = {
   updateBookController,
   getMyBookController,
   createMyReview,
-  getMyReview
+  getMyReviewController,
 };
