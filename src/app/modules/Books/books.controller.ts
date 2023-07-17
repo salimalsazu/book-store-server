@@ -3,14 +3,13 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { Request, Response } from "express";
 import { BooksService } from "./books.service";
-import { IBook } from "./books.interface";
+import { IBook, IReview } from "./books.interface";
 import pick from "../../../shared/pick";
 import { BooksFilterAbleFields } from "./books.constant";
 
-//Create Cow Controller
+//Create Books Controller
 const createBookController = catchAsync(async (req: Request, res: Response) => {
   const { ...book } = req.body;
-
   const result = await BooksService.createBookService(book);
 
   sendResponse(res, {
@@ -21,7 +20,7 @@ const createBookController = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-//Get All Cows Controller
+//Get All Books Controller
 const getAllBookController = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, BooksFilterAbleFields);
 
@@ -74,10 +73,54 @@ const updateBookController = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyBookController = catchAsync(async (req: Request, res: Response) => {
+  const token = req.headers?.authorization;
+  const result = await BooksService.getMyBookService(token as string);
+
+  sendResponse<IBook[]>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All Books get Successfully",
+    data: result,
+  });
+});
+
+const createMyReview = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params?.id;
+  const newReview: IReview = req.body;
+
+  const result = await BooksService.createReviewService(id, newReview);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "New review added successfully !!",
+    data: result,
+  });
+});
+
+const getMyReview = catchAsync(async (req: Request, res: Response) => {
+    const filters = pick(req.query, BooksFilterAbleFields);
+  
+    const result = await BooksService.getAllBookService(filters);
+  
+    sendResponse<IBook[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "All Books get Successfully",
+      data: result,
+    });
+  });
+
+
+
 export const BooksController = {
   createBookController,
   getAllBookController,
   getSingleBooksController,
   deleteBookController,
   updateBookController,
+  getMyBookController,
+  createMyReview,
+  getMyReview
 };

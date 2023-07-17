@@ -6,6 +6,10 @@ export type ILoginUser = {
 export type ILoginUserResponse = {
   accessToken: string;
   refreshToken?: string;
+  user: {
+    name?: string;
+    email?: string;
+  };
 };
 
 export type IRefreshTokenResponse = {

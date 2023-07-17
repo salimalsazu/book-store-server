@@ -14,6 +14,8 @@ import { jwtHelpers } from "../../../helpers/jwtHelpers";
 
 const createUserService = async (payload: IUser): Promise<IUser> => {
   const result = await User.create(payload);
+
+
   return result;
 };
 
@@ -49,9 +51,16 @@ const loginService = async (
     config.jwt.refresh_expires_in as string
   );
 
+  const userInfo = {
+    _id: isUserExist._id,
+    email: isUserExist.email,
+    name: isUserExist.name,
+  };
+
   return {
     accessToken,
     refreshToken,
+    user: userInfo,
   };
 };
 

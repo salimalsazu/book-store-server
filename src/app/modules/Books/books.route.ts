@@ -7,10 +7,16 @@ router.post("/", BooksController.createBookController);
 
 router.get("/", BooksController.getAllBookController);
 
+router.get("/mybooks", BooksController.getMyBookController);
+
 router.get("/:id", BooksController.getSingleBooksController);
 
 router.delete("/:id", BooksController.deleteBookController);
 
 router.patch("/:id", BooksController.updateBookController);
+
+router.post("/reviews/:id", BooksController.createMyReview);
+
+router.post("/reviews/:id", BooksController.getMyReview);
 
 export const BookRoutes = router;

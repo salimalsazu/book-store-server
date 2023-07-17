@@ -26,8 +26,10 @@ userSchema.statics.isUserExist = async function (
 > {
   const user = await User.findOne(
     { email },
-    { _id: 1, password: 1, email: 1, name: 1 }
+    { email: 1, name: 1, password: 1 }
   );
+
+  console.log("from login", user);
   return user;
 };
 
@@ -36,6 +38,8 @@ userSchema.statics.isPasswordMatched = async function (
   savedPassword: string
 ): Promise<boolean> {
   const isMatched = await bcrypt.compare(givenPassword, savedPassword);
+  console.log("pasword.....", isMatched);
+
   return isMatched;
 };
 

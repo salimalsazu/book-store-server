@@ -1,24 +1,18 @@
 import httpStatus from "http-status";
 import ApiError from "../../../errors/ApiErrors";
-import { BooksFilter, IBook } from "./books.interface";
+import { BooksFilter, IBook, IReview } from "./books.interface";
 import { Books } from "./books.model";
 import { IGenericResponse } from "../../../interfaces/common";
 import { BooksSearchAbleFields } from "./books.constant";
+import mongoose from "mongoose";
+import { jwtHelpers } from "../../../helpers/jwtHelpers";
+import config from "../../../config";
+import { Secret } from "jsonwebtoken";
 
 //Create Book Service
 const createBookService = async (payload: IBook): Promise<IBook> => {
-  // //getting user
-  // const userData = await Books.findById(payload.seller);
-
-  //User Role Check
-  // if (userData?.role === 'seller') {
-  //   const result = await CowProduct.create(payload);
-  //   return result;
-  // } else {
-  //   throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not a seller');
-  // }
-
   const result = await Books.create(payload);
+  console.log(result);
   return result;
 };
 
@@ -80,10 +74,73 @@ const updateBookService = async (
   return result;
 };
 
+const getMyBookService = async (token: string): Promise<IBook[] | null> => {
+  //getting user
+
+  const session = await mongoose.startSession();
+  let allBooks = null;
+  try {
+    session.startTransaction();
+    // check user exist or not
+    const isUserExist = jwtHelpers.verifyToken(
+      token,
+      config.jwt.secret as Secret
+    );
+    if (!isUserExist) {
+      throw new ApiError(httpStatus.NOT_FOUND, "User does not exist !");
+    }
+
+    const { email, _id } = isUserExist;
+
+    console.log(isUserExist);
+    //  check email
+    if (email || _id) {
+      allBooks = await Books.find({ userId: _id });
+    }
+
+    if (!allBooks?.length) {
+      throw new ApiError(httpStatus.NOT_FOUND, "No Books Found !!");
+    }
+    //
+    await session.commitTransaction();
+    await session.endSession();
+    return allBooks;
+  } catch (error) {
+    // err
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
+};
+
+const createReviewService = async (
+  payload: string,
+  newReview: IReview
+): Promise<IBook | null> => {
+  if (!newReview) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Review is Required");
+  }
+  console.log(newReview, "new review is here");
+
+  const book = await Books.findOne({ _id: payload });
+  if (!book) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Book not found");
+  }
+  // book?.reviews?.push(newReview);
+  const review = await Books.findOneAndUpdate(
+    { _id: payload },
+    { $push: { reviews: newReview } },
+    { new: true }
+  );
+  return review;
+};
+
 export const BooksService = {
   createBookService,
   getAllBookService,
   getSingleBooksService,
   deleteSingleBookService,
   updateBookService,
+  getMyBookService,
+  createReviewService,
 };
