@@ -6,19 +6,39 @@ import { Secret } from "jsonwebtoken";
 import ApiError from "../../../errors/ApiErrors";
 import httpStatus from "http-status";
 import { Wish } from "./wishlist.modal";
+import { IDetails, IWishList } from "./wishlist.interface";
+import { Books } from "../Books/books.model";
 
 //Create Book Service
-const createBookService = async (payload: IBook): Promise<IBook> => {
-  const result = await Wish.create(payload);
-  console.log(result);
+const createWishService = async (
+  payload: IDetails
+): Promise<IWishList | null> => {
+  const isWishListExist = await Wish.isWishListExist(payload);
+
+  if (isWishListExist) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You have already added this book on your wishlist !!"
+    );
+  }
+
+  const isBookExist = await Books.findOne({ _id: payload.bookId });
+
+  if (!isBookExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Book is not found!!");
+  }
+
+  const result = (
+    await (await Wish.create(payload)).populate("bookId")
+  ).populate("userId");
+
   return result;
 };
 
-const getMyBookService = async (token: string): Promise<IBook[] | null> => {
+const getMyWishService = async (token: string): Promise<IWishList[] | null> => {
   //getting user
-
   const session = await mongoose.startSession();
-  let allBooks = null;
+  let allWish = null;
   try {
     session.startTransaction();
     // check user exist or not
@@ -32,23 +52,29 @@ const getMyBookService = async (token: string): Promise<IBook[] | null> => {
 
     const { email, _id } = isUserExist;
 
-    console.log(isUserExist);
     //  check email
     if (email || _id) {
-      allBooks = await Wish.find({ userId: _id });
+      allWish = await Wish.find({ userId: _id })
+        .populate("bookId")
+        .populate("userId");
     }
 
-    if (!allBooks?.length) {
-      throw new ApiError(httpStatus.NOT_FOUND, "No Books Found !!");
+    if (!allWish?.length) {
+      throw new ApiError(httpStatus.NOT_FOUND, "No Wish Found !!");
     }
     //
     await session.commitTransaction();
     await session.endSession();
-    return allBooks;
+    return allWish;
   } catch (error) {
     // err
     await session.abortTransaction();
     await session.endSession();
     throw error;
   }
+};
+
+export const WishService = {
+  createWishService,
+  getMyWishService,
 };

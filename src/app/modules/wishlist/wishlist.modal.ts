@@ -1,50 +1,39 @@
-import { Schema, model } from "mongoose";
-import { BookModel, IBook } from "../Books/books.interface";
+import { Schema, Types, model } from "mongoose";
+import {
+  IDetails,
+  IWishList,
+  IWishListExist,
+  WishListModel,
+} from "./wishlist.interface";
 
-export const WishSchema = new Schema<IBook, BookModel>(
+export const WishListSchema = new Schema<IWishList, WishListModel>(
   {
-    title: {
-      type: String,
+    bookId: {
+      type: Types.ObjectId,
       required: true,
-    },
-    author: {
-      type: String,
-      required: true,
-    },
-    genre: {
-      type: String,
-      required: true,
-    },
-    publication: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
-    },
-    image: {
-      type: String,
-    },
-    description: {
-      type: String,
-    },
-    email: {
-      type: String,
-    },
-    name: {
-      type: String,
+      ref: "book",
     },
     userId: {
-      type: Schema.Types.ObjectId,
+      type: Types.ObjectId,
+      required: true,
       ref: "User",
     },
   },
   {
     timestamps: true,
-    toJSON: {
-      virtuals: true,
-    },
   }
 );
 
-export const Wish = model<IBook, BookModel>("wish", WishSchema);
+WishListSchema.statics.isWishListExist = async function (
+  payload: IDetails
+): Promise<IWishListExist | null> {
+  const wishlist = await Wish.findOne({
+    bookId: payload.bookId,
+    userId: payload.userId,
+  });
+  return wishlist;
+};
+
+// export model
+
+export const Wish = model<IWishList, WishListModel>("WishList", WishListSchema);

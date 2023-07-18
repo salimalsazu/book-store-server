@@ -7,4 +7,4 @@ router.post("/", WishController.createWishController);
 
 router.get("/", WishController.getAllWishController);
 
-export const BookRoutes = router;
+export const WishRoutes = router;
