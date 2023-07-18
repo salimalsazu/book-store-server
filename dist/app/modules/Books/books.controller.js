@@ -44,6 +44,7 @@ const createBookController = (0, catchAsync_1.default)((req, res) => __awaiter(v
 //Get All Books Controller
 const getAllBookController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const filters = (0, pick_1.default)(req.query, books_constant_1.BooksFilterAbleFields);
+    console.log(filters);
     const result = yield books_service_1.BooksService.getAllBookService(filters);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
