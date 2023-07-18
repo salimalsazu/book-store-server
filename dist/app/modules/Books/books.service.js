@@ -90,10 +90,10 @@ const getMyBookService = (token) => __awaiter(void 0, void 0, void 0, function* 
         if (!isUserExist) {
             throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "User does not exist !");
         }
-        const { email, _id } = isUserExist;
-        console.log(isUserExist);
+        const { userEmail, _id } = isUserExist;
+        console.log("user check", isUserExist);
         //  check email
-        if (email || _id) {
+        if (userEmail || _id) {
             allBooks = yield books_model_1.Books.find({ userId: _id });
         }
         if (!(allBooks === null || allBooks === void 0 ? void 0 : allBooks.length)) {

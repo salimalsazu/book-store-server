@@ -87,7 +87,9 @@ const updateBookController = (0, catchAsync_1.default)((req, res) => __awaiter(v
 const getMyBookController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const token = (_a = req.headers) === null || _a === void 0 ? void 0 : _a.authorization;
+    console.log("token", token);
     const result = yield books_service_1.BooksService.getMyBookService(token);
+    console.log("result", result);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

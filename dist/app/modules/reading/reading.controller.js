@@ -12,29 +12,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WishController = void 0;
+exports.ReadController = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
-;
-const wishlist_service_1 = require("./wishlist.service");
+const reading_service_1 = require("./reading.service");
 //Create Wish Controller
-const createWishController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createReadController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const details = req.body;
-    console.log(details);
-    const result = yield wishlist_service_1.WishService.createWishService(details);
+    const result = yield reading_service_1.ReadService.createReadService(details);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Book added to Wishlist successfully !!",
+        message: "Book added to List successfully For Reading...!!",
         data: result,
     });
 }));
 //Get All Books Controller
-const getAllWishController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllReadController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const token = (_a = req.headers) === null || _a === void 0 ? void 0 : _a.authorization;
-    const result = yield wishlist_service_1.WishService.getMyWishService(token);
+    const result = yield reading_service_1.ReadService.getMyReadService(token);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -42,7 +40,18 @@ const getAllWishController = (0, catchAsync_1.default)((req, res) => __awaiter(v
         data: result,
     });
 }));
-exports.WishController = {
-    getAllWishController,
-    createWishController,
+const updateReadController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const details = req.body;
+    const result = yield reading_service_1.ReadService.updateMyReadService(details);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Reading list updated successfully !!",
+        data: result,
+    });
+}));
+exports.ReadController = {
+    getAllReadController,
+    createReadController,
+    updateReadController,
 };

@@ -12,32 +12,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WishService = void 0;
+exports.ReadService = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-;
 const jwtHelpers_1 = require("../../../helpers/jwtHelpers");
 const config_1 = __importDefault(require("../../../config"));
 const ApiErrors_1 = __importDefault(require("../../../errors/ApiErrors"));
 const http_status_1 = __importDefault(require("http-status"));
-const wishlist_modal_1 = require("./wishlist.modal");
 const books_model_1 = require("../Books/books.model");
+const reading_modal_1 = require("./reading.modal");
 //Create Book Service
-const createWishService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const isWishListExist = yield wishlist_modal_1.Wish.isWishListExist(payload);
-    if (isWishListExist) {
-        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You have already added this book on your wishlist !!");
+const createReadService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isReadListExist = yield reading_modal_1.Read.isReadListExist(payload);
+    if (isReadListExist) {
+        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You have already added this book on your List !!");
     }
     const isBookExist = yield books_model_1.Books.findOne({ _id: payload.bookId });
     if (!isBookExist) {
         throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "Book is not found!!");
     }
-    const result = (yield (yield wishlist_modal_1.Wish.create(payload)).populate("bookId")).populate("userId");
+    const result = (yield (yield reading_modal_1.Read.create(payload)).populate("bookId")).populate("userId");
     return result;
 });
-const getMyWishService = (token) => __awaiter(void 0, void 0, void 0, function* () {
+const getMyReadService = (token) => __awaiter(void 0, void 0, void 0, function* () {
     //getting user
     const session = yield mongoose_1.default.startSession();
-    let allWish = null;
+    let allRead = null;
     try {
         session.startTransaction();
         // check user exist or not
@@ -48,17 +47,17 @@ const getMyWishService = (token) => __awaiter(void 0, void 0, void 0, function* 
         const { email, _id } = isUserExist;
         //  check email
         if (email || _id) {
-            allWish = yield wishlist_modal_1.Wish.find({ userId: _id })
+            allRead = yield reading_modal_1.Read.find({ userId: _id })
                 .populate("bookId")
                 .populate("userId");
         }
-        if (!(allWish === null || allWish === void 0 ? void 0 : allWish.length)) {
+        if (!(allRead === null || allRead === void 0 ? void 0 : allRead.length)) {
             throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "No Wish Found !!");
         }
         //
         yield session.commitTransaction();
         yield session.endSession();
-        return allWish;
+        return allRead;
     }
     catch (error) {
         // err
@@ -67,7 +66,23 @@ const getMyWishService = (token) => __awaiter(void 0, void 0, void 0, function* 
         throw error;
     }
 });
-exports.WishService = {
-    createWishService,
-    getMyWishService,
+const updateMyReadService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isReadingListExist = yield reading_modal_1.Read.isReadListExist(payload);
+    if (!isReadingListExist) {
+        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You have not  added this book on your Reading list !!");
+    }
+    const isBookExist = yield books_model_1.Books.findOne({ _id: payload.bookId });
+    if (!isBookExist) {
+        throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "Book is not found!!");
+    }
+    // const result = await ReadingLists.findOneAndUpdate(payload);
+    const result = yield reading_modal_1.Read.findOneAndUpdate(payload, {
+        $set: { status: "finished reading" },
+    });
+    return result;
+});
+exports.ReadService = {
+    createReadService,
+    getMyReadService,
+    updateMyReadService,
 };
