@@ -1,14 +1,13 @@
 import httpStatus from "http-status";
 import sendResponse from "../../../shared/sendResponse";
 import { Request, Response } from "express";
-import catchAsync from "../../../shared/catchAsync";;
-import { WishService } from "./wishlist.service";
+import catchAsync from "../../../shared/catchAsync";
+import { ReadService } from "./reading.service";
 
 //Create Wish Controller
-const createWishController = catchAsync(async (req: Request, res: Response) => {
+const createReadController = catchAsync(async (req: Request, res: Response) => {
   const details = req.body;
-  console.log(details);
-  const result = await WishService.createWishService(details);
+  const result = await ReadService.createReadService(details);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -19,9 +18,9 @@ const createWishController = catchAsync(async (req: Request, res: Response) => {
 });
 
 //Get All Books Controller
-const getAllWishController = catchAsync(async (req: Request, res: Response) => {
+const getAllReadController = catchAsync(async (req: Request, res: Response) => {
   const token = req.headers?.authorization;
-  const result = await WishService.getMyWishService(token as string);
+  const result = await ReadService.getMyReadService(token as string);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -31,7 +30,7 @@ const getAllWishController = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const WishController = {
-  getAllWishController,
-  createWishController,
+export const ReadController = {
+  getAllReadController,
+  createReadController,
 };

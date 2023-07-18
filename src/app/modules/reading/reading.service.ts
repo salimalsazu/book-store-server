@@ -1,23 +1,25 @@
-import mongoose from "mongoose";;
+import mongoose from "mongoose";
+import { IBook } from "../Books/books.interface";
 import { jwtHelpers } from "../../../helpers/jwtHelpers";
 import config from "../../../config";
 import { Secret } from "jsonwebtoken";
 import ApiError from "../../../errors/ApiErrors";
 import httpStatus from "http-status";
-import { Wish } from "./wishlist.modal";
-import { IDetails, IWishList } from "./wishlist.interface";
+
 import { Books } from "../Books/books.model";
+import { IDetails, IReadList } from "./reading.interface";
+import { Read } from "./reading.modal";
 
 //Create Book Service
-const createWishService = async (
+const createReadService = async (
   payload: IDetails
-): Promise<IWishList | null> => {
-  const isWishListExist = await Wish.isWishListExist(payload);
+): Promise<IReadList | null> => {
+  const isReadListExist = await Read.isReadListExist(payload);
 
-  if (isWishListExist) {
+  if (isReadListExist) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      "You have already added this book on your wishlist !!"
+      "You have already added this book on your List !!"
     );
   }
 
@@ -28,16 +30,16 @@ const createWishService = async (
   }
 
   const result = (
-    await (await Wish.create(payload)).populate("bookId")
+    await (await Read.create(payload)).populate("bookId")
   ).populate("userId");
 
   return result;
 };
 
-const getMyWishService = async (token: string): Promise<IWishList[] | null> => {
+const getMyReadService = async (token: string): Promise<IReadList[] | null> => {
   //getting user
   const session = await mongoose.startSession();
-  let allWish = null;
+  let allRead = null;
   try {
     session.startTransaction();
     // check user exist or not
@@ -53,18 +55,18 @@ const getMyWishService = async (token: string): Promise<IWishList[] | null> => {
 
     //  check email
     if (email || _id) {
-      allWish = await Wish.find({ userId: _id })
+      allRead = await Read.find({ userId: _id })
         .populate("bookId")
         .populate("userId");
     }
 
-    if (!allWish?.length) {
+    if (!allRead?.length) {
       throw new ApiError(httpStatus.NOT_FOUND, "No Wish Found !!");
     }
     //
     await session.commitTransaction();
     await session.endSession();
-    return allWish;
+    return allRead;
   } catch (error) {
     // err
     await session.abortTransaction();
@@ -73,7 +75,7 @@ const getMyWishService = async (token: string): Promise<IWishList[] | null> => {
   }
 };
 
-export const WishService = {
-  createWishService,
-  getMyWishService,
+export const ReadService = {
+  createReadService,
+  getMyReadService,
 };
