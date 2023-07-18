@@ -24,7 +24,7 @@ const getAllWishController = catchAsync(async (req: Request, res: Response) => {
   const token = req.headers?.authorization;
   const result = await WishService.getMyWishService(token as string);
 
-  sendResponse<IBook[]>(res, {
+  sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "All Wish get Successfully",

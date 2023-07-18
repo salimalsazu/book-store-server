@@ -90,11 +90,12 @@ const getMyBookService = async (token: string): Promise<IBook[] | null> => {
       throw new ApiError(httpStatus.NOT_FOUND, "User does not exist !");
     }
 
-    const { email, _id } = isUserExist;
+    const { userEmail, _id } = isUserExist;
 
-    console.log(isUserExist);
+    console.log("user check", isUserExist);
+
     //  check email
-    if (email || _id) {
+    if (userEmail || _id) {
       allBooks = await Books.find({ userId: _id });
     }
 

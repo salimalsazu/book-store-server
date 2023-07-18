@@ -76,7 +76,10 @@ const updateBookController = catchAsync(async (req: Request, res: Response) => {
 
 const getMyBookController = catchAsync(async (req: Request, res: Response) => {
   const token = req.headers?.authorization;
+  console.log("token", token);
   const result = await BooksService.getMyBookService(token as string);
+
+  console.log("result", result);
 
   sendResponse<IBook[]>(res, {
     statusCode: httpStatus.OK,
