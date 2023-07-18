@@ -12,7 +12,7 @@ const createReadController = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Book added to Wishlist successfully !!",
+    message: "Book added to List successfully For Reading...!!",
     data: result,
   });
 });
@@ -30,7 +30,19 @@ const getAllReadController = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateReadController = catchAsync(async (req: Request, res: Response) => {
+  const details = req.body;
+  const result = await ReadService.updateMyReadService(details);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Reading list updated successfully !!",
+    data: result,
+  });
+});
+
 export const ReadController = {
   getAllReadController,
   createReadController,
+  updateReadController,
 };

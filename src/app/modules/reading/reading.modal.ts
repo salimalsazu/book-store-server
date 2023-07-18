@@ -20,7 +20,7 @@ export const ReadListSchema = new Schema<IReadList, ReadListModel>(
     },
     status: {
       type: String,
-      default: "currntly Reading",
+      default: "Currently Reading",
     },
   },
   {
@@ -31,7 +31,7 @@ export const ReadListSchema = new Schema<IReadList, ReadListModel>(
 ReadListSchema.statics.isReadListExist = async function (
   payload: IDetails
 ): Promise<IReadListExist | null> {
-  const wishlist = await Wish.findOne({
+  const wishlist = await Read.findOne({
     bookId: payload.bookId,
     userId: payload.userId,
   });

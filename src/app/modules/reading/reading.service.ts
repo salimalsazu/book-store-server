@@ -75,7 +75,34 @@ const getMyReadService = async (token: string): Promise<IReadList[] | null> => {
   }
 };
 
+const updateMyReadService = async (
+  payload: IDetails
+): Promise<IReadList | null> => {
+  const isReadingListExist = await Read.isReadListExist(payload);
+
+  if (!isReadingListExist) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You have not  added this book on your Reading list !!"
+    );
+  }
+
+  const isBookExist = await Books.findOne({ _id: payload.bookId });
+
+  if (!isBookExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Book is not found!!");
+  }
+
+  // const result = await ReadingLists.findOneAndUpdate(payload);
+  const result = await Read.findOneAndUpdate(payload, {
+    $set: { status: "finished reading" },
+  });
+
+  return result;
+};
+
 export const ReadService = {
   createReadService,
   getMyReadService,
+  updateMyReadService,
 };

@@ -8,4 +8,6 @@ router.post("/", ReadController.createReadController);
 
 router.get("/", ReadController.getAllReadController);
 
+router.get("/:id", ReadController.updateReadController);
+
 export const ReadRoutes = router;
