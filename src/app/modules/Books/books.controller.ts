@@ -24,6 +24,7 @@ const createBookController = catchAsync(async (req: Request, res: Response) => {
 const getAllBookController = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, BooksFilterAbleFields);
 
+  console.log(filters);
   const result = await BooksService.getAllBookService(filters);
 
   sendResponse<IBook[]>(res, {

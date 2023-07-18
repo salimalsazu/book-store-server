@@ -2,8 +2,8 @@ import { Model, Types } from "mongoose";
 import { IUser } from "../User/user.interface";
 
 export type IReview = {
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
   image?: string | undefined;
   description: string;
   userId?: Types.ObjectId | IUser;

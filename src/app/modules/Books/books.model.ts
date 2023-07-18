@@ -3,8 +3,8 @@ import { BookModel, IBook, IReview } from "./books.interface";
 
 const reviewsSchema = new Schema(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true },
+    name: { type: String },
+    email: { type: String },
     image: { type: String },
     description: { type: String, required: true },
     userId: { type: String },
